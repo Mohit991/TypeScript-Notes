@@ -299,43 +299,56 @@ counter = 1;
 `
 <br/> 
 If you assign a string to the counter variable, you’ll get an error: <br/> 
+
 ```
 let counter: number;
 counter = 'Hello'; // compile error
 ```
+
 <br/> 
 Error: <br/> 
+
 `
 Type '"Hello"' is not assignable to type 'number'.
 `
+
 <br/> 
 You can both use a type annotation for a variable and initialize it in a single statement like this: <br/> 
+
 `let counter: number = 1;`
+
 <br/> 
 The following shows other examples of primitive type annotations: <br/> 
+
 ```
 let name: string = 'John';
 let age: number = 25;
 let active: boolean = true;
 ```
+
 <br/> 
 
 ## Type annotation examples
 ### Arrays
 
 To annotate an array type you use a specific type followed by a square bracket : type[] : <br/>
+
 ```
 let arrayName: type[];
 ```
+
  <br/>
 For example, the following declares an array of strings: <br/>
+
 ```
 let names: string[] = ['John', 'Jane', 'Peter', 'David', 'Mary'];
 ```
+
  <br/>
 
  ### Objects
 To specify a type for an object, you use the object type annotation. For example: <br/>
+
 ```
 let person: {
   name: string;
@@ -348,6 +361,7 @@ person = {
 }; // valid
 
 ```
+
 <br/>
 
 In this example, the person object only accepts an object that has two properties: name with the string type and age with the number type.
