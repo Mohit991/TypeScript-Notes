@@ -776,5 +776,128 @@ For example, the Object type has the toString() and valueOf() methods that can b
 2. The Object type, however, describes functionality that is available on all objects.
 3. The empty type {} refers to an object that has no property on its own.
 
+## TypeScript Array Type
+A TypeScript array is an ordered list of data. To declare an array that holds values of a specific type, you use the following syntax: <br/>
+
+```
+let arrayName: type[];
+```
+
+<br/>
+For example, the following declares an array of strings: <br/>
+
+```
+let skills: string[] = [];
+```
+
+<br/>
+
+The following declares a variable and assigns an array of strings to it:
+<br/>
+
+```
+let skills = ['Problem Sovling','Software Design','Programming'];
+```
+
+<br/>
+
+In this example, TypeScript infers the skills array as an array of strings. It is equivalent to the following: <br/>
+
+```
+let skills: string[];
+skills = ['Problem Sovling','Software Design','Programming'];
+```
+
+<br/>
+
+After you define an array of a specific type, TypeScript will prevent you from adding incompatible values. For example, the following will cause an error:
+<br/>
+
+```
+skills.push(100);
+```
+
+<br/>
+
+Because we’re trying to add a number to the string array.
+<br/>
+Error:
+<br/>
+
+```
+Argument of type 'number' is not assignable to parameter of type 'string'.
+```
+
+<br/>
+
+### Storing values of mixed types
+The following illustrates how to define an array that holds both strings and numbers: <br/>
+
+```
+let scores = ['Programming', 5, 'Software Design', 4];
+```
 
 
+<br/>
+In this case, TypeScript infers the scores array as an array of **string | number**. It’s equivalent to the following: <br/>
+
+```
+let scores : (string | number)[];
+scores = ['Programming', 5, 'Software Design', 4];
+```
+
+<br/>
+
+### Summary
+1. In TypeScript, an array is an ordered list of values.
+2. Use the let **arr: type[]** syntax to declare an array of a specific type. Adding a value of a different type to the array will result in an error.
+3. An array can store values of mixed types. Use the **arr: (type1 | type2) []** syntax to declare an array of values with mixed types (type1, and type2)
+
+
+## TypeScript Tuple Type
+A tuple works like an array with some additional considerations:
+
+1. The number of elements in the tuple is fixed.
+2. The types of elements are known, and need not be the same.
+
+For example, you can use a tuple to represent a value as a pair of a string and a number:
+<br/>
+
+```
+let skill: [string, number];
+skill = ['Programming', 5];
+```
+
+<br/>
+
+The order of values in a tuple is important. If you change the order of values of the skill tuple to [5, "Programming"], you’ll get an error. <br/>
+
+For this reason, it’s a good practice to use tuples with data that are related to each other in a specific order. <br/>
+
+For example, you can use a tuple to define an RGB color that always comes in a three-number pattern: <br/>
+
+(r,g,b) <br />
+For example: <br />
+
+```
+let color: [number, number, number] = [255, 0, 0];
+```
+
+<br/>
+
+### Optional Tuple Elements
+Since TypeScript 3.0, a tuple can have optional elements specified using the question mark (?) postfix. <br/>
+
+For example, you can define an RGBA tuple with the optional alpha channel value: <br/>
+
+```
+let bgColor, headerColor: [number, number, number, number?];
+bgColor = [0, 255, 255, 0.5];
+headerColor = [0, 255, 255];
+```
+
+<br/>
+
+
+### Summary
+1. A tuple is an array with a fixed number of elements whose types are known.
