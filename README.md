@@ -364,7 +364,417 @@ person = {
 
 <br/>
 
-In this example, the person object only accepts an object that has two properties: name with the string type and age with the number type.
+In this example, the person object only accepts an object with two properties: name with the string type and age with the number type.
+
+### Function arguments & return types
+The following shows a function annotation with parameter type annotation and return type annotation: <br />
+```
+let greeting : (name: string) => string;
+```
+
+<br/>
+
+In this example, you can assign any function that accepts a string and returns a string to the greeting variable: <br />
+
+```
+greeting = function (name: string) {
+    return `Hi ${name}`;
+};
+```
+
+<br />
 
 
+The following causes an error because the function that is assigned to the greeting variable doesn’t match its function type. <br />
+
+```
+greeting = function () {
+    console.log('Hello');
+};
+```
+
+Error: <br />
+```
+Type '() => void' is not assignable to type '(name: string) => string'. Type 'void' is not assignable to type 'string'.
+```
+
+### Summary
+Use type annotations with the syntax : [type] to explicitly specify a type for a variable, function, function return value, etc.
+
+## TypeScript Type Inference
+Type inference describes where and how TypeScript infers types when you don’t explicitly annotate them. <br/>
+
+### Basic type inference
+When you declare a variable, you can use a type annotation to explicitly specify a type for it. For example: <br />
+
+```
+let counter: number;
+```
+
+<br/>
+However, if you initialize the counter variable with a number, TypeScript will infer the type of the counter to be number. For example: <br/>
+
+```
+let counter = 0;
+```
+
+<br/>
+It is equivalent to the following statement: <br/>
+
+```
+let counter: number = 0;
+```
+
+<br />
+Likewise, when you assign a function parameter a value, TypeScript infers the type of the parameter to the type of the default value. For example: <br/>
+
+```
+function setCounter(max=100) {
+    // ...
+}
+```
+
+In this example, TypeScript infers the type of the max parameter to be number. <br />
+
+```
+function setCounter(max=100) {
+    // ...
+}
+```
+
+<br />
+
+Similarly, TypeScript infers the following return type of the increment() function as number: <br />
+
+```
+function increment(counter: number) {
+    return counter++;
+}
+```
+
+<br/>
+It is the same as: <br/>
+
+```
+function increment(counter: number) : number {
+    return counter++;
+}
+```
+
+<br/>
+
+### The best common type algorithm
+
+Consider the following assignment: <br />
+
+```
+let items = [1, 2, 3, null];
+````
+
+<br />
+To infer the type of items variable, TypeScript needs to consider the type of each element in the array.
+<br />
+It uses the best common type algorithm to analyze each candidate type and select the type that is compatible with all other candidates.
+<br />
+In this case, TypeScript selects the number or null array type (number | null) []) as the best common type. Note that the | means the OR operator in types.
+<br />
+If you add a string to the items array, TypeScript will infer the type for the items as an array of numbers and strings: (number | string)[]
+<br />
+
+```
+let items = [1, 2, 3, 'Cheese'];
+```
+
+<br />
+
+### Contextual typing
+TypeScript uses the locations of variables to infer their types. This mechanism is known as contextual typing. For example: <br />
+
+```
+document.addEventListener('click', function (event) {
+    console.log(event.button); 
+});
+```
+
+<br />
+In this example, TypeScript knows that the event parameter is an instance of MouseEvent because of the click event.
+<br />
+However, when you change the click event to the scroll the event, TypeScript will issue an error:
+<br />
+
+```
+document.addEventListener('scroll', function (event) {
+    console.log(event.button); // compile error
+});
+```
+
+<br />
+
+Error:
+<br />
+
+```
+Property 'button' does not exist on type 'Event'.(2339)
+```
+
+<br />
+
+TypeScript knows that the event in this case, is an instance of UIEvent, not a MouseEvent. And UIEvent does not have the button property, therefore, TypeScript throws an error.
+<br />
+You will find contextual typing in many cases such as arguments to function calls, type assertions, members of objects and array literals, return statements, and right-hand sides of assignments.
+<br />
+
+### Type inference vs. Type annotations
+The following shows the difference between type inference and type annotations: <br />
+
+Type inference	- TypeScript guesses the type	 <br />
+
+Type annotations - You explicitly tell TypeScript the type <br />
+
+### When do you use type inference and type annotations?
+<br />
+In practice, you should always use the type inference as much as possible. You use the type annotation in the following cases:
+<br />
+1. When you declare a variable and assign it a value later.
+2. When you want a variable that can’t be inferred.
+3. When a function returns the any type, you need to clarify the value.
+
+### Summary
+1. Type inference occurs when you initialize variables, set parameter default values, and determine function return types.
+2. TypeScript uses the best common type algorithm to select the best candidate types that are compatible with all variables.
+3. TypeScript also uses contextual typing to infer types of variables based on the locations of the variables.
+
+## TypeScript Number
+All numbers in TypeScript are either **floating-point values or big integers**. The floating-point numbers have the type **number** while the big integers get the type **bigint**.
+<br/>
+### The number type
+The following shows how to declare a variable that holds a floating-point value: <br/>
+`let price: number;`
+<br />
+Alternatively, you can initialize the price variable to a number: <br />
+`let price = 9.95;`
+<br />
+
+### Big Integers
+The big integers represent the whole numbers larger than 2 power 53 – 1. A Big integer literal has the **n** character at the end of an integer literal like this: <br />
+`let big: bigint = 9007199254740991n;`
+<br/>
+
+```
+JavaScript has the Number type (with the letter N in uppercase) that refers to the non-primitive boxed object. You should not use this Number type as much as possible in TypeScript.
+```
+
+<br/>
+
+### Summary
+All numbers in TypeScript are either **floating-point values** that get the **number type** or **big integers** that get the **bigint type**.
+Avoid using the Number type as much as possible.
+
+## TypeScript String
+Like JavaScript, TypeScript uses double quotes (") or single quotes (') to surround string literals: <br/>
+
+```
+let firstName: string = 'John';
+let title: string = "Web Developer";
+```
+
+<br/>
+TypeScript also supports template strings that use the backtick (`) to surround characters. <br/>
+
+```
+let firstName: string = `John`;
+let title: string = `Web Developer`;
+let profile: string = `I'm ${firstName}. 
+I'm a ${title}`;
+
+console.log(profile);
+```
+
+<br/>
+
+Output <br/>
+
+```
+I'm John. 
+I'm a Web Developer.
+```
+
+<br />
+
+### Summary
+1. In TypeScript, all strings get the string type. 
+2. Like JavaScript, TypeScript uses double quotes ("), single quotes ('), and backtick (`) to surround string literals.
+
+
+## TypeScript Boolean
+The TypeScript boolean type has two values: true and false. The boolean type is one of the primitive types in TypeScript. <br/>
+
+```
+let pending: boolean;
+pending = true;
+// after a while
+// ..
+pending = false;
+```
+
+<br/>
+
+### Boolean operator
+To manipulate boolean values, you use the boolean operators. TypeScript supports common boolean operators: <br/>
+
+```
+&&	   Logical AND operator
+||	   Logical OR operator
+!	   Logical NOT operator
+```
+
+<br/>
+
+```
+// NOT operator
+const pending: boolean = true;
+const notPending = !pending; // false
+console.log(result); // false
+
+const hasError: boolean = false;
+const completed: boolean = true;
+
+// AND operator
+let result = completed && hasError; 
+console.log(result); // false
+
+// OR operator
+result = completed || hasError; 
+console.log(result); // true
+```
+
+<br/>
+
+### Type annotations for boolean
+
+```
+let completed = true;
+```
+
+<br/>
+Is same as:
+<br/>
+
+```
+let completed: boolean = true;
+```
+
+<br/>
+JavaScript has the Boolean type that refers to the non-primitive boxed object. The Boolean type has the letter B in uppercase, which is different from the boolean type. <br/>
+
+It’s a good practice to avoid using the Boolean type. <br/>
+
+### Summary
+1. TypeScript boolean type has two values true and false.
+2. Use the boolean keyword to declare boolean variables.
+3. Do not use Boolean type unless you have a good reason to do so.
+
+## TypeScript object Type
+
+The TypeScript object type represents all values that are not in primitive types. <br/>
+
+The following are primitive types in TypeScript: <br/>
  
+1. number
+2. bigint
+3. string
+4. boolean
+5. null
+6. undefined
+7. symbol
+
+<br/>
+
+```
+let employee: object;
+
+employee = {
+    firstName: 'John',
+    lastName: 'Doe',
+    age: 25,
+    jobTitle: 'Web Developer'
+};
+
+console.log(employee);
+```
+
+<br/>
+If you reassign a primitive value to the employee object, you’ll get an error : <br/>
+
+```
+employee = "Jane";
+```
+
+<br/>
+
+```
+Error:
+error TS2322: Type '"Jane"' is not assignable to type 'object'.
+```
+
+<br/>
+To explicitly specify properties of the employee object, you first use the following syntax to declare the employee object:
+<br/>
+
+```
+let employee: {
+    firstName: string;
+    lastName: string;
+    age: number;
+    jobTitle: string;
+};
+```
+
+<br/>
+And then assign the employee object to a literal object with the described properties:
+<br/>
+
+```
+employee = {
+    firstName: 'John',
+    lastName: 'Doe',
+    age: 25,
+    jobTitle: 'Web Developer'
+};
+```
+
+<br/>
+
+Or you can combine both syntaxes in the same statement like this:
+<br/>
+
+```
+let employee: {
+    firstName: string;
+    lastName: string;
+    age: number;
+    jobTitle: string;
+} = {
+    firstName: 'John',
+    lastName: 'Doe',
+    age: 25,
+    jobTitle: 'Web Developer'
+};
+```
+
+<br/>
+
+### object vs. Object
+TypeScript has another type called Object with the letter O in uppercase. It’s important to understand the differences between them. <br/>
+ 
+The object type represents all non-primitive values while the Object type describes the functionality of all objects. <br/>
+
+For example, the Object type has the toString() and valueOf() methods that can be accessible by any object. <br/>
+
+### Summary
+1. The TypeScript object type represents any value that is not a primitive value.
+2. The Object type, however, describes functionality that is available on all objects.
+3. The empty type {} refers to an object that has no property on its own.
+
+
+
