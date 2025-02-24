@@ -901,3 +901,1059 @@ headerColor = [0, 255, 255];
 
 ### Summary
 1. A tuple is an array with a fixed number of elements whose types are known.
+
+
+## TypeScript Enum
+### What is an enum
+An enum is a group of named constant values. Enum stands for enumerated type.
+
+To define an enum, you follow these steps:
+
+1. First, use the enum keyword followed by the name of the enum.
+2. Then, define constant values for the enum.
+   
+The following shows the syntax for defining an enum: <br/>
+`enum name {constant1, constant2, ...};`
+<br/>
+
+In this syntax, the constant1, constant2, etc., are also known as the members of the enum. <br/>
+
+### Example
+
+```
+enum Month {
+    Jan,
+    Feb,
+    Mar,
+    Apr,
+    May,
+    Jun,
+    Jul,
+    Aug,
+    Sep,
+    Oct,
+    Nov,
+    Dec
+};
+```
+
+<br />
+In this example, the enum name is Month and constant values are Jan, Feb, Mar, and so on. <br />  
+
+The following declares a function that uses the Month enum as the type of the month parameter: <br />
+
+```
+function isItSummer(month: Month) {
+  let isSummer: boolean;
+  switch (month) {
+    case Month.Jun:
+    case Month.Jul:
+    case Month.Aug:
+      isSummer = true;
+      break;
+    default:
+      isSummer = false;
+      break;
+  }
+  return isSummer;
+}
+```
+
+<br />
+
+### How TypeScript enum works
+It’s a good practice to use the constant values defined by enums in the code. <br />
+
+However, the following example passes a number instead of an enum to the isItSummer() function. And it works. <br />
+
+```
+console.log(isItSummer(6)); // true
+```
+
+<br />
+This example uses a number (6) instead of a constant defined by the Month enum. And it works. <br/>
+Let’s check the generated Javascript code of the Month enum: <br/>
+
+```
+{
+  '0': 'Jan', 
+  '1': 'Feb', 
+  '2': 'Mar', 
+  '3': 'Apr', 
+  '4': 'May', 
+  '5': 'Jun', 
+  '6': 'Jul', 
+  '7': 'Aug', 
+  '8': 'Sep', 
+  '9': 'Oct', 
+  '10': 'Nov',
+  '11': 'Dec',
+  Jan: 0,     
+  Feb: 1,     
+  Mar: 2,     
+  Apr: 3,     
+  May: 4,
+  Jun: 5,
+  Jul: 6,
+  Aug: 7,
+  Sep: 8,
+  Oct: 9,
+  Nov: 10,
+  Dec: 11
+}
+```
+
+<br/>
+The output indicates that a TypeScript enum is an object in JavaScript. This object has named properties declared in the enum. For example, Jan is 0 and Feb is 1.
+
+The generated object also has number keys with string values representing the named constants.
+
+### Specifying enum members’ numbers
+TypeScript defines the numeric value of an enum’s member based on the order of that member that appears in the enum definition. For example, Jan takes 0, Feb gets 1, etc. <br/>
+It’s possible to explicitly specify numbers for the members of an enum like this: <br/>
+
+```
+enum Month {
+    Jan = 1,
+    Feb,
+    Mar,
+    Apr,
+    May,
+    Jun,
+    Jul,
+    Aug,
+    Sep,
+    Oct,
+    Nov,
+    Dec
+};
+```
+
+
+<br/>
+In this example, the Jan constant value takes 1 instead of 0. The Feb takes 2, and the Mar takes 3, etc.
+<br/>
+
+### When to use an enum
+You should use an enum when you:
+
+1. Have a small set of closely related fixed values.
+2. And these values are known at compile time.
+
+For example, you can use an enum for the approval status: <br/>
+
+```
+enum ApprovalStatus {
+    draft,
+    submitted,
+    approved,
+    rejected
+};
+
+const request =  {
+    id: 1,
+    status: ApprovalStatus.approved,
+    description: 'Please approve this request'
+};
+
+if(request.status === ApprovalStatus.approved) {
+    // send an email
+    console.log('Send email to the Applicant...');
+}
+```
+
+<br/>
+
+### Summary
+1. A TypeScript enum is a group of constant values.
+2. Under the hood, an enum is a JavaScript object with named properties declared in the enum definition.
+3. Do use an enum when you have a small set of fixed values that are closely related and known at compile time.
+
+## Introduction to TypeScript any type
+Sometimes, you may need to store a value in a variable. But you don’t know its type when writing the program. And the unknown value may come from a third-party API or user input. <br/>
+
+In this case, you want to opt out of the type checking and allow the value to pass through the compile-time check. <br/>
+
+```
+let result: any;
+
+result = 1;
+console.log(result);
+
+result = 'Hello';
+console.log(result);
+
+result = [1, 2, 3];
+const total = result.reduce((a: number, b: number) => a + b, 0);
+console.log(total);
+```
+
+<br/>
+Let’s take another typical example: <br/>
+
+```
+// json may come from a third-party API
+const json = `{"latitude": 10.11, "longitude":12.12}`;
+
+// parse JSON to find location
+const currentLocation = JSON.parse(json);
+console.log(currentLocation);
+```
+
+<br/>
+
+```
+{ latitude: 10.11, longitude: 12.12 }
+```
+
+<br/>
+In this example, TypeScript infers the value of the currentLocation variable as any. We assign an object returned by the JSON.parse() function the currentLocation variable. <br/>
+
+However, when we access the non-existing property (x) of the currentLocation variable, TypeScript does not carry any checks. <br/>
+
+This is working fine and shows an undefined value in the console: <br/>
+
+```
+console.log(currentLocation.x); // undefined
+```
+
+<br/>
+
+
+The TypeScript compiler doesn’t complain or issue any errors. <br/>
+
+The any type provides you with a way to work with the existing JavaScript codebase. It allows you to gradually opt in and opt out of type-checking during compilation. Therefore, you can use the any type for migrating a JavaScript project over to TypeScript. <br/>
+
+### TypeScript any: implicit typing
+If you declare a variable without specifying a type, TypeScript assumes that you use the any type. This feature is called type inference. TypeScript guesses the type of the variable. For example: <br/>
+
+```
+let result;
+```
+
+<br/>
+
+### Summary
+1. The TypeScript any type allows you to store a value of any type. It instructs the compiler to skip type-checking.
+2. Use the any type to store a value that you don’t know its type at the compile-time or when you migrate a JavaScript project over to a TypeScript project.
+
+## TypeScript unknown type
+In TypeScript, the unknown type can hold a value that is not known upfront but requires type checking. <br/>
+
+To declare a variable of the unknown type, you use the following syntax:  <br/>
+
+```
+let result: unknown;
+```
+
+<br/>
+
+Like the any type, you can assign any value to a variable of the unknown type. For example: <br/>
+
+```
+let result: unknown;
+
+result = 1;
+result = 'hello';
+result = false;
+result = Symbol();
+result = { name: 'John' };
+result = [1, 2, 3];
+```
+
+<br/>
+
+_**Unlike the any type, TypeScript checks the type before performing operations on it.**_  
+
+For example, you cannot call a method or apply an operator on a unknown value. If you attempt to do so, the TypeScript compiler will issue an error: <br/>  
+
+```
+let result: unknown;
+result = [1,2,3];
+
+const total = result.reduce((a: number, b:number ) => a + b, 0);
+console.log(total);
+```
+
+<br/>
+
+In this example, the result variable has the type of unknown. We assign an array the result value, but its type is still unknown. Therefore, we cannot call the reduce() method of an array on it.  <br/>
+
+To call the reduce() method on the result variable, you need to use the type assertion to explicitly tell the TypeScript compiler that the type of the result is an array. For example: <br/>
+
+ 
+```
+let result: unknown;
+result = [1, 2, 3];
+
+const total = (result as number[]).reduce((a: number, b: number) => a + b, 0);
+console.log(total); // 6
+```
+
+<br/>
+
+In this example, we explicitly tell the TypeScript compiler that the type of the result is an array of numbers (result as number[]).
+
+Therefore, we can call the reduce() method on the result array without any issues. <br/><br/>
+
+![image](https://github.com/user-attachments/assets/c9fb4ca4-b904-4f28-983a-487628f4d94d)
+
+
+<br /><br/>
+
+### Uses: Handling external data
+When receiving data from an external API, you can use the unknown type to enforce validation before processing it.  
+The following example shows how to use the fetch method to call an API from the `https://jsonplaceholder.typicode.com/posts` endpoint: <br />
+
+
+```
+const fetchData = async (url: string): Promise<unknown> => {
+    const response = await fetch(url);
+    return await response.json();
+};
+
+const showPosts = async () => {
+    const url = 'https://jsonplaceholder.typicode.com/posts';
+    try {
+        const posts = await fetchData(url); // unknown type
+
+        (posts as { userId: number; id: number; title: string; body:                string }[]).map((post) => console.log(post.title));
+
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+showPosts();
+```
+
+<br/>
+
+First, define a function fetchData that calls API from a URL and returns JSON data. Since the shape of the returned data is not known, the function returns a Promise<unknown> value: <br/>
+
+```
+const fetchData = async (url: string): Promise<unknown> => {
+    const response = await fetch(url);
+    return await response.json();
+};
+```
+
+<br/>
+
+Second, define the showPosts() function that uses the fetchData() function to call an API from the endpoint `https://jsonplaceholder.typicode.com/posts:` <br/>
+
+```
+const showPosts = async () => {
+    const url = 'https://jsonplaceholder.typicode.com/posts';
+    try {
+        const posts = await fetchData(url); // unknown type
+        (
+            posts as { userId: number; id: number; title: string; body: string }[]
+        ).map((post) => console.log(post.title));
+    } catch (err) {
+        console.log(err);
+    }
+};
+```
+
+<br/>
+
+In this example, the posts variable has a type of unknown.
+
+Before accessing its title property, we use type assertion to instruct the TypeScript compiler to treat it as an array of post objects: <br/>
+
+```
+posts as { userId: number; id: number; title: string; body: string }[]
+```
+
+<br/>
+
+Third, call the showPosts() function: <br/>
+
+`showPosts();`
+
+<br/>
+
+### Summary
+1. The unknown type is like any type but more restrictive.
+2. Use the unknown type to handle data coming from external sources and require validation before use.
+
+
+## TypeScript union type
+Sometimes, you will run into a function that expects a parameter that is either a number or a string. For example: <br />
+
+
+```
+function add(a: any, b: any) {
+    if (typeof a === 'number' && typeof b === 'number') {
+        return a + b;
+    }
+    if (typeof a === 'string' && typeof b === 'string') {
+        return a.concat(b);
+    }
+    throw new Error('Parameters must be numbers or strings');
+}
+```
+
+<br/>
+
+
+In this example, the add() function will calculate the sum of its parameters if they are numbers.
+
+If the parameters are strings, the add() function will concatenate them into a single string.
+
+If the parameters are neither numbers nor strings, the add() function throws an error.
+
+The problem with the parameters of the add() function is that its parameters have the any type. It means that you can call the function with arguments that are neither numbers nor strings, the TypeScript will be fine with it.
+
+This code will be compiled successfully but cause an error at runtime: <br />
+
+```
+add(true, false);
+```
+
+<br/>
+
+To resolve this, you can use the TypeScript union type. The union type allows you to combine multiple types into one type. <br/>
+
+For example, the following variable is of type number or string: <br/>
+
+```
+let result: number | string;
+result = 10; // OK
+result = 'Hi'; // also OK
+result = false; // a boolean value, not OK
+```
+
+<br/>
+
+A union type describes a value that can be one of several types, not just two. For example `number | string | boolean` is the type of a value that can be a number, a string, or a boolean. <br/>
+Back to the add() function example, you can change the types of parameters from the any to a union like this: <br/>
+
+
+```
+function add(a: number | string, b: number | string) {
+    if (typeof a === 'number' && typeof b === 'number') {
+        return a + b;
+    }
+    if (typeof a === 'string' && typeof b === 'string') {
+        return a.concat(b);
+    }
+    throw new Error('Parameters must be numbers or strings');
+}
+```
+
+<br />
+We can specify the union type for the add function: <br/>
+
+```
+function add(a: number | string, b: number | string) :  number | string {
+    if (typeof a === 'number' && typeof b === 'number') {
+        return a + b;
+    }
+    if (typeof a === 'string' && typeof b === 'string') {
+        return a.concat(b);
+    }
+    throw new Error('Parameters must be numbers or strings');
+}
+```
+
+<br/>
+
+### Summary
+1. A TypeScript union type allows you to store a value of one or several types in a variable.
+
+## TypeScript String Literal Types
+The string literal types allow you to define a type that accepts only one specified string literal.
+
+The following defines a string literal type that accepts a literal string 'click': <br/>
+`let click: 'click';`
+<br/>
+The click is a string literal type that accepts only the string-literal 'click'. If you assign the literal string 'click' to the click, it will be valid: <br/>
+`click = 'click'; // valid`
+<br/>
+However, when you assign another string literal to the click, the TypeScript compiler will issue an error. For example: <br/>
+`click = 'dblclick'; // compiler error`
+<br/>
+`Type '"dblclick"' is not assignable to type '"click"'.` 
+<br/>
+The string literal type is useful to limit a possible string value that a variable can store.
+The string literal types can combine nicely with the union types to define a finite set of string literal values for a variable: <br/>
+
+```
+let mouseEvent: 'click' | 'dblclick' | 'mouseup' | 'mousedown';
+mouseEvent = 'click'; // valid
+mouseEvent = 'dblclick'; // valid
+mouseEvent = 'mouseup'; // valid
+mouseEvent = 'mousedown'; // valid
+mouseEvent = 'mouseover'; // compiler error
+```
+
+<br/>
+If you use the string literal types in multiple places, they will be verbose.
+
+To avoid this, you can use the type aliases. For example: <br/>
+
+```
+type MyMouseEvent = 'click' | 'dblclick' | 'mouseup' | 'mousedown';
+let mouseEvent: MyMouseEvent;
+mouseEvent = 'click'; // valid
+mouseEvent = 'dblclick'; // valid
+mouseEvent = 'mouseup'; // valid
+mouseEvent = 'mousedown'; // valid
+mouseEvent = 'mouseover'; // compiler error
+
+let anotherEvent: MyMouseEvent;
+```
+
+<br />
+
+### Summary
+1. A TypeScript string literal type defines a type that accepts specified string literal.
+2. Use the string literal types with union types and type aliases to define types that accept a finite set of string literals.
+
+## TypeScript Type Aliases
+In TypeScript, a type alias allows you to create a new name for an existing type. <br/>
+Type aliases can be useful for:
+1. Simplifying complex types.
+2. Making code more readable.
+3. Creating reusable types that can be used in many places in the codebase.
+To define a type alias, you use the type keyword followed by the alias name and the type it represents. <br/>
+`type alias = existingType;`
+<br/>
+The existing type can be any valid TypeScript type including primitive type, object type, union type, intersection type, and function type. <br/>
+
+
+### Type alias examples
+1. Primitive types:
+
+   ```
+   type Name: string;
+   let firstName: Name;
+   let lastName: Name;
+   ```
+
+2. Object types:
+
+   ```
+   type Person = {
+     name: string;
+     age: number;
+   };
+   
+   let person: Person = {
+     name: 'John',
+     age: 25
+   };
+   ```
+
+3. Union Types:
+
+   ```
+   type alphanumeric = string | number;
+   let input: alphanumeric;
+   input = 100; // valid
+   input = 'Hi'; // valid
+   input = false; // Compiler error
+   ```
+
+4. Intersection Types:
+
+   ```
+   type Personal = {
+     name: string;
+     age: number;
+   };
+   
+   type Contact = {
+     email: string;
+     phone: string;
+   };
+   
+   type Candidate = Personal & Contact;
+   
+   let candidate: Candidate = {
+     name: "Joe",
+     age: 25,
+     email: "joe@example.com",
+     phone: "(408)-123-4567"
+   };
+   ```
+
+### Summary
+1. Use type aliases to define new names for existing types.
+
+## TypeScript never type
+In TypeScript, a type is like a set of values. For example, the number type holds the numbers 1, 2, 3, etc. The string type holds the strings like 'Hi', 'Hello', etc. The null type holds a single value, which is null.
+
+The never type is a type that holds no value. It is like an empty set.
+
+Since a never type does not hold any value, you cannot assign a value to a variable with the never type.
+`let empty: never = 'hello';` <br/>
+
+`Type 'string' is not assignable to type 'never'` <br/>
+
+### So why do we need the never type in the first place?
+Since the never type has zero value, you can use it to denote an impossibility in the type system.
+
+For example, you may have an intersection type that can be both a string and a number at the same time, which is impossible:
+
+`type Alphanumeric = string & number; // never` <br/>
+Therefore, the TypeScript compiler infers the type of Alphanumeric as never.
+
+This is because string and number are mutually exclusive. In other words, a value cannot be both a string and a number simultaneously.
+
+Typically, you use the never type to represent the return type of a function that never returns the control to the caller. For example, a function that always throws an error: <br/>
+
+
+```
+function raiseError(message: string): never {
+    throw new Error(message);
+}
+```
+
+<br/>
+
+If you have a function that contains an indefinite loop, its return type should be never. For example: <br/>
+
+```
+function forever(): never {
+  while (true) {}
+}
+```
+
+
+In this example, the type of the return type of the forever() function is `never`. <br/>
+
+### TypeScript never example
+
+```
+type Role = 'admin' | 'user';
+
+const authorize = (role: Role): string => {
+  switch (role) {
+    case 'admin':
+      return 'You can do anything';
+    case 'user':
+      return 'You can do something';
+    default:
+      // never reach here util we add a new role
+      const _unreachable: never = role;
+      throw new Error(`Invalid role: ${_unreachable}`);
+  }
+};
+
+console.log(authorize('admin'));
+
+```
+
+
+<br/>
+
+Step 1. Define a type Role that can be either a string 'admin' or 'user': <br/>
+`type Role = 'admin' | 'user';` <br/>
+
+Step 2. Create the authorize() function that accepts a value of the Role type and returns a string: <br/>
+
+```
+const authorize = (role: Role): string => {
+  switch (role) {
+    case 'admin':
+      return 'You can do anything';
+    case 'user':
+      return 'You can do something';
+    default:
+      // never reach here util we add a new role
+      const _unreachable: never = role;
+      throw new Error(`Invalid role: ${_unreachable}`);
+  }
+};
+```
+
+
+<br />
+How it works.
+
+First, use the switch statement to return a corresponding string if the role is admin or user. <br />
+Second, define a variable called _unreachable with the type never and assign the role to it. Also, throw an error in the default branch because the execution will never reach the default branch. <br />
+Why do we handle the default case? <br/>
+The reason is that if we add a new value to the Role type and forget to add a logic to handle the new role, TypeScript will issue an error: <br/>
+
+`type Role = 'admin' | 'user' | 'guest';` <br/>
+
+In this case, we add the 'guest' to the Role type.
+
+And TypeScript issues the following error: <br />
+`Type 'string' is not assignable to type 'never'.ts(2322)` <br />
+
+This is because the value of the role in the default branch now becomes the string 'guest' and you cannot assign a string value to a variable with the type never. <br/>
+To fix this, you need to create a new case branch to handle the new role:
+<br />
+
+
+```
+const authorize = (role: Role): string => {
+  switch (role) {
+    case 'admin':
+      return 'You can do anything';
+    case 'user':
+      return 'You can do something';
+    case 'guest':
+      return 'You can do nothing';
+    default:
+      // never reach here util we add a new role
+      const _unreachable: never = role;
+      throw new Error(`Invalid role: ${_unreachable}`);
+  }
+};
+```
+
+
+<br/>
+
+To make it more concise, we can define a function with the return type never and use it in the default branch: <br/>
+
+```
+type Role = 'admin' | 'user' | 'guest';
+
+const unknownRole = (role: never): never => {
+  throw new Error(`Invalid role: ${role}`);
+};
+
+const authorize = (role: Role): string => {
+  switch (role) {
+    case 'admin':
+      return 'You can do anything';
+    case 'user':
+      return 'You can do something';
+    case 'guest':
+      return 'You can do nothing';
+    default:
+      // never reach here util we add a new role
+      return unknownRole(role);
+  }
+};
+
+console.log(authorize('admin'));
+```
+
+
+<br/>
+
+### Summary
+1. Use the never type that holds no value, denoting an impossibility in the type system.
+
+## TypeScript functions
+TypeScript functions are the building blocks of readable, maintainable, and reusable code.
+
+Like JavaScript, you use the function keyword to declare a function in TypeScript: <br/>
+
+
+```
+function name(parameter: type, parameter:type,...): returnType {
+   // do something
+}
+```
+
+<br/>
+Unlike JavaScript, TypeScript allows you to use type annotations in parameters and return the value of a function. <br/>
+
+
+```
+function add(a: number, b: number): number {
+    return a + b;
+}
+```
+
+<br />
+In this example, the add() function accepts two parameters with the number type.
+
+When you call the add() function, the TypeScript compiler will check each argument passed to the function to ensure that they are numbers.
+
+In the add() function example, you can only pass numbers into it, not the values of other types.
+
+The `: number` after the parentheses indicates the return type. The add() function returns a value of the number type in this case.
+
+When a function has a return type, the TypeScript compiler checks every return statement against the return type to ensure that the return value is compatible with it.  
+
+If a function does not return a value, you can use the void type as the return type. The void keyword indicates that the function doesn’t return any value. For example: <br/>
+
+```
+function echo(message: string): void {
+    console.log(message.toUpperCase());
+}
+```
+
+<br/>
+
+The void prevents the code inside the function from returning a value and stops the calling code from assigning the result of the function to a variable.  <br/>
+When you do not annotate the return type, TypeScript will try to infer an appropriate type. <br/>
+
+```
+function add(a: number, b: number) {
+    return a + b;
+}
+```
+
+<br/>
+
+In this example, the TypeScript compiler tries to infer the return type of the add() function to the number type, which is expected.
+
+However, if a function has different branches that return different types, the TypeScript compiler may infer the union type or any type.
+
+Therefore, it is important to add type annotations to a function as much as possible.
+
+### Summary
+1. Use type annotations for function parameters and return type to keep the calling code inline and ensure the type checking within the function body.
+
+
+## TypeScript function types
+A function type has two parts: parameters and return type. When declaring a function type, you need to specify both parts with the following syntax:
+<br/>
+
+`(parameter: type, parameter:type,...) => type` <br/>
+
+The following example shows how to declare a variable that has a function type that accepts two numbers and returns a number: <br/>
+
+`let add: (x: number, y: number) => number;` <br/>
+
+The function type accepts two arguments: x and y with the type number.
+The type of the return value is number that follows the fat arrow (=>) appeared between parameters and return type. <br/>
+
+Once annotating a variable with a function type, you can assign the function with the same type to the variable.
+
+TypeScript compiler will match the number of parameters with their types and the return type. <br/>
+
+The following example shows how to assign a function to the add variable: <br/>
+
+ 
+```
+add = function (x: number, y: number) {
+    return x + y;
+};
+```
+
+Also, you can declare a variable and assign a function to a variable like this: <br/>
+
+```
+let add: (a: number, b: number) => number =
+    function (x: number, y: number) {
+        return x + y;
+    };
+```
+
+
+<br/>
+
+add is a variable. <br/>
+(a: number, b: number) => number is the function type. <br/>
+And the rest is the function assigned to the add variable. <br/>
+
+If you assign other functions whose type doesn’t match the add variable, TypeScript will issue an error: <br/>
+
+
+```
+add = function (x: string, y: string): number {
+    return x.concat(y).length;
+};
+```
+
+
+<br/>
+
+### Inferring function types
+TypeScript compiler can figure out the function type when you have the type on one side of the equation. This form of type inference is called contextual typing. For example: <br/><br/>
+![TypeScript-Function-Type-Example](https://github.com/user-attachments/assets/42a5ca99-e1c9-49db-b232-98fef00a7ab9)
+
+<br/><br/>
+
+In this example, the add function will take the type `(x: number, y:number) => number`.
+
+By using the type inference, you can significantly reduce the amount of code with annotations.
+
+
+### Optional Parameters
+In TypeScript, the compiler checks every function call and issues an error in the following cases: <br/>
+
+The number of arguments is different from the number of parameters specified in the function. <br/>
+Or the types of arguments are not compatible with the types of function parameters. <br/>
+Because the compiler thoroughly checks the passing arguments, you need to annotate optional parameters to instruct the compiler not to issue an error when you omit the arguments. <br/>
+
+To make a function parameter optional, you use the ? after the parameter name. For example: <br/>
+
+
+
+```
+function multiply(a: number, b: number, c?: number): number {
+
+    if (typeof c !== 'undefined') {
+        return a * b * c;
+    }
+    return a * b;
+}
+```
+
+
+<br/>
+The optional parameters must appear after the required parameters in the parameter list. <br/>
+
+
+### Summary
+1. Use the parameter?: type syntax to make a parameter optional.
+2. Use the expression typeof(parameter) !== 'undefined' to check if the parameter has been initialized.
+
+
+## Default Parameters
+```
+function applyDiscount(price: number, discount: number = 0.05): number {
+    return price * (1 - discount);
+}
+
+console.log(applyDiscount(100)); // 95
+```
+
+
+<br/>
+
+## Rest Parameters
+
+A rest parameter allows a function to accept zero or more arguments of the specified type. In TypeScript, the rest parameters follow these rules:
+
+1. A function has only one rest parameter.
+2. The rest parameter appear last in the parameter list.
+3. The type of the rest parameter is an array type.
+
+To declare a rest parameter, you prefix the parameter name with three dots (…) and use the array type as the type annotation: <br/>
+
+```
+function fn(...rest: type[]) {
+   //...
+}
+```
+
+<br/>
+
+
+```
+function getTotal(...numbers: number[]): number {
+    let total = 0;
+    numbers.forEach((num) => total += num);
+    return total;
+}
+```
+
+
+<br/>
+
+In this example, the getTotal() calculates the total of numbers passed into it.
+
+Since the numbers parameter is a rest parameter, you can pass one or more numbers to calculate the total: <br/>
+
+```
+console.log(getTotal()); // 0
+console.log(getTotal(10, 20)); // 30
+console.log(getTotal(10, 20, 30)); // 60
+```
+
+<br/>
+
+
+### Rest parameters with multiple types
+```
+function combine(...args: (number | string)[]): [number, string] {
+  let total = 0;
+  let str = '';
+  args.forEach((arg) => {
+    if (typeof arg === 'number') {
+      total += arg;
+    } else if (typeof arg === 'string') {
+      str += arg;
+    }
+  });
+
+  return [total, str];
+}
+
+const [total, str] = combine(3, 'Happy', 2, 1, ' New Year');
+
+console.log({ total });
+console.log({ str });
+```
+
+
+### Summary
+1. Use rest parameters to allow a function to accept a variable number of arguments with the same or different types.
+2. Use ...args type[] syntax to define rest parameters with the same type.
+3. Use ...args (type1 | type2 ) [] syntax to define rest parameters with different types
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
