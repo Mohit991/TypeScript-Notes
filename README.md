@@ -1887,69 +1887,600 @@ console.log({ str });
 3. Use ...args (type1 | type2 ) [] syntax to define rest parameters with different types
 
 
+## TypeScript Class
+In ES5, you can use a constructor function and prototype inheritance to create a “class”.
+
+To create a Person class that has three properties ssn, first name, and last name, you use the following **constructor function**: <br/>
+
+
+```
+function Person(ssn, firstName, lastName) {
+    this.ssn = ssn;
+    this.firstName = firstName;
+    this.lastName = lastName;
+}
+```
+
+
+<br/ >
+
+Next, you can define a prototype method to get the full name of the person by concatenating first name and last name like this: <br/>
+
+```
+Person.prototype.getFullName = function () {
+    return `${this.firstName} ${this.lastName}`;
+}
+```
+
+<br/>
+Then, you can use the Person “class” by creating a new object:
+
+<br/>
+
+
+```
+let person = new Person('171-28-0926','John','Doe');
+console.log(person.getFullName());
+```
+
+
+<br/>
+
+ES6 allows you to define a class, which is simply syntactic sugar for creating constructor functions and prototypal inheritance:
+
+<br/>
+
+
+```
+class Person {
+    ssn;
+    firstName;
+    lastName;
+
+    constructor(ssn, firstName, lastName) {
+        this.ssn = ssn;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
+    getFullName() {
+        return `${this.firstName} ${this.lastName}`;
+    }
+}
+```
+
+
+<br/>
+
+Using the Person class is the same as the Person constructor function:
+
+<br/>
+
+```
+let person = new Person('171-28-0926','John','Doe');
+console.log(person.getFullName());
+```
+
+<br/>
+
+TypeScript class adds type annotations to the properties and methods of the class. The following shows the Person class in TypeScript:
+
+<br/>
+
+
+```
+class Person {
+    ssn: string;
+    firstName: string;
+    lastName: string;
+
+    constructor(ssn: string, firstName: string, lastName: string) {
+        this.ssn = ssn;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
+    getFullName(): string {
+        return `${this.firstName} ${this.lastName}`;
+    }
+}
+```
+
+
+<br/>
+
+### Summary
+1. Use `class` keyword to define a class in TypeScript.
+2. TypeScript leverages the ES6 class syntax and adds type annotations to make the class more robust.
+
+## TypeScript Access Modifiers
+Access modifiers change the visibility of the properties and methods of a class. TypeScript provides three access modifiers:
+
+1. private
+2. protected
+3. public
+
+Note that TypeScript controls the access logically during compilation time, not at runtime.
+
+### The private modifier
+The private modifier limits the visibility to the same class only. When you add the private modifier to a property or method, you can access that property or method within the same class. Any attempt to access private properties or methods outside the class will result in an error at compiled time.
+
+Once the private property is in place, you can access the ssn property in the constructor or methods of the Person class. For example: <br />
+
+
+```
+class Person {
+  private ssn: string;
+  private firstName: string;
+  private lastName: string;
+
+  constructor(ssn: string, firstName: string, lastName: string) {
+    this.ssn = ssn;
+    this.firstName = firstName;
+    this.lastName = lastName;
+  }
+
+  getFullName(): string {
+    return `${this.firstName} ${this.lastName}`;
+  }
+}
+```
+
+
+<br/>
+
+The following attempts to access the ssn property outside the class: <br/>
+
+
+```
+let person = new Person('153-07-3130', 'John', 'Doe');
+console.log(person.ssn); // compile error
+```
+
+<br/>
+
+
+### The public modifier
+The public modifier allows class properties and methods to be accessible from all locations. If you don’t specify any access modifier for properties and methods, they will take the public modifier by default.
+
+### The protected modifier
+The protected modifier allows properties and methods of a class to be accessible within the same class and subclasses.
+
+When a class (child class) inherits from another class (parent class), it is a subclass of the parent class.
+
+The TypeScript compiler will issue an error if you attempt to access the protected properties or methods from anywhere else. <br/>
+
+
+```
+class Person {
+  protected ssn: string;
+  private firstName: string;
+  private lastName: string;
+
+  constructor(ssn: string, firstName: string, lastName: string) {
+    this.ssn = ssn;
+    this.firstName = firstName;
+    this.lastName = lastName;
+  }
+
+  getFullName(): string {
+    return `${this.firstName} ${this.lastName}`;
+  }
+}
+```
+
+
+<br/>
+To make the code shorter, TypeScript allows you to both declare properties and initialize them in the constructor like this: <br/>
+
+
+```
+class Person {
+  constructor(
+    protected ssn: string,
+    private firstName: string,
+    private lastName: string
+  ) {}
+
+  getFullName(): string {
+    return `${this.firstName} ${this.lastName}`;
+  }
+}
+```
+
+
+<br/>
+
+### Summary
+1. TypeScript provides three access modifiers to class properties and methods: private, protected, and public.
+2. The private modifier allows access within the same class.
+3. The protected modifier allows access within the same class and subclasses.
+4. The public modifier allows access from any location.
+Properties and methods have public access if you omit the access modifiers.
+
+### TypeScript readonly
+TypeScript provides the readonly modifier that allows you to mark the properties of a class immutable. The assignment to a readonly property can only occur in one of two places:
+
+1. In the property declaration.
+2. In the constructor of the same class.
+
+To mark a property as immutable, you use the readonly keyword. The following shows how to declare a readonly property in the Person class: 
+<br/>
+
+
+```
+class Person {
+    readonly birthDate: Date;
+
+    constructor(birthDate: Date) {
+        this.birthDate = birthDate;
+    }
+}
+```
+
+
+<br/>
+
+The following attempts to reassign the birthDate property that results in an error: <br/>
+
+
+```
+let person = new Person(new Date(1990, 12, 25));
+person.birthDate = new Date(1991, 12, 25); // Compile error
+```
+
+
+Error:
+<br/>
+
+`Cannot assign to 'birthDate' because it is a read-only property.` <br/>
+
+ <br/>
+![image](https://github.com/user-attachments/assets/4498cc50-b6d1-4d19-844c-8541320ad633)
+ <br/> <br/>
+
+### Summary
+1. Use the readonly access modifier to mark a class property as immutable.
+2. A readonly property must be initialized as a part of the declaration or in the constructor of the same class.
+
+## TypeScript Inheritance
+A class can reuse the properties and methods of another class. This is called inheritance in TypeScript.
+
+The class which inherits properties and methods is called the child class. The class whose properties and methods are inherited is known as the parent class. These names come from the nature that children inherit genes from their parents.
+
+Inheritance allows you to reuse the functionality of an existing class without rewriting it.
+
+JavaScript uses prototypal inheritance, not classical inheritance like Java or C#. ES6 introduces the class syntax that is simply the syntactic sugar of the prototypal inheritance. TypeScript supports inheritance like ES6.
+
+To inherit a class, you use the extends keyword. For example the following Employee class inherits the Person class: <br />
+
+
+```
+class Employee extends Person {
+  //...
+}
+```
+
+
+<br/>
+
+### Constructor in Inheritance
+Because the Person class has a constructor that initializes the firstName and lastName properties, you need to initialize these properties in the constructor of the Employee class by calling its parent class’ constructor. <br/>
+
+To call the constructor of the parent class in the constructor of the child class, you use the super() syntax. For example: <br/>  
+
+
+```
+class Employee extends Person {
+    constructor(
+        firstName: string,
+        lastName: string,
+        private jobTitle: string) {
+        
+        // call the constructor of the Person class:
+        super(firstName, lastName);
+    }
+}
+```
+
+
+<br/>
+
+The following creates an instance of the Employee class: <br/>
+
+`let employee = new Employee('John','Doe','Front-end Developer');`
+
+
+<br/>
+Because the Employee class inherits properties and methods of the Person class, you can call the getFullName() and describe() methods on the employee object as follows:
+<br/>
+
+```
+let employee = new Employee('John', 'Doe', 'Web Developer');
+
+console.log(employee.getFullName());
+console.log(employee.describe());
+```
+
+
+<br/>
+
+### Method overriding
+When you call the employee.describe() method on the employee object, the describe() method of the Person class is executed that shows the message: This is John Doe.
+
+If you want the Employee class has its own version of the describe() method, you can define it in the Employee class like this: <br/>
+
+
+```
+class Employee extends Person {
+    constructor(
+        firstName: string,
+        lastName: string,
+        private jobTitle: string) {
+
+        super(firstName, lastName);
+    }
+
+    describe(): string {
+        return super.describe() + `I'm a ${this.jobTitle}.`;
+    }
+}
+```
+
+
+<br/>
+In the describe() method, we called the describe() method of the parent class using the syntax `super.methodInParentClass()`.
+
+If you call the describe() method on the employee object, the describe() method in the Employee class is invoked: <br/>
+
+```
+let employee = new Employee('John', 'Doe', 'Web Developer');
+console.log(employee.describe());
+```
+
+<br/>
+
+
+```
+This is John Doe.I'm a Web Developer.
+```
+
+
+<br/>
+
+### Summary
+1. Use the extends keyword to allow a class to inherit from another class.
+2. Use super() to call the constructor of the parent class in the constructor of the child class. Also, use the super.methodInParentClass() syntax to invoke the methodInParentClass() in the method of the child class.
+
+
+## TypeScript Static Methods and Properties
+### Static properties
+Unlike an instance property, a static property is shared among all instances of a class.
+
+To declare a static property, you use the static keyword. To access a static property, you use the className.propertyName syntax. For example:
+<br/>
+
+
+```
+class Employee {
+    static headcount: number = 0;
+
+    constructor(
+        private firstName: string,
+        private lastName: string,
+        private jobTitle: string) {
+
+        Employee.headcount++;
+    }
+}
+```
+
+
+<br/>
+
+
+In this example, the headcount is a static property that is initialized to zero. Its value is increased by 1 whenever a new object is created.
+
+The following creates two Employee objects and shows the value of the headcount property. It returns two as expected.
+
+<br />
+
+
+```
+let john = new Employee('John', 'Doe', 'Front-end Developer');
+let jane = new Employee('Jane', 'Doe', 'Back-end Developer');
+
+console.log(Employee.headcount); // 2
+```
+
+
+<br/>
+
+
+### Static methods
+Similar to the static property, a static method is also shared across instances of the class. To declare a static method, you use the static keyword before the method name. For example: <br/>
+
+
+```
+class Employee {
+    private static headcount: number = 0;
+
+    constructor(
+        private firstName: string,
+        private lastName: string,
+        private jobTitle: string) {
+
+        Employee.headcount++;
+    }
+
+    public static getHeadcount() {
+        return Employee.headcount;
+    }
+}
+```
+
+
+<br/>
+
+In this example:
+
+1. First, change the access modifier of the headcount static property from public to private so that its value cannot be changed outside of the class without creating a new Employee object.
+2. Second, add the getHeadcount() static method that returns the value of the headcount static property.
+
+To call a static method, you use the className.staticMethod() syntax. For example: <br/>
+
+```
+let john = new Employee('John', 'Doe', 'Front-end Developer');
+let jane = new Employee('Jane', 'Doe', 'Back-end Developer');
+console.log(Employee.getHeadcount); // 2
+```
+
+
+<br/>
+
+In practice, you will find a library that contains many static properties and methods like the Math object. It has PI, E, … static properties and abs(), round(), etc., static methods.
+
+
+### Summary
+Static properties and methods are shared by all instances of a class.
+Use the static keyword before a property or a method to make it static.
+
+## TypeScript Abstract Classes
+An abstract class is typically used to define common behaviors for derived classes to extend. Unlike a regular class, an abstract class cannot be instantiated directly. <br/>
+
+To declare an abstract class, you use the abstract keyword: <br/>
+
+```
+abstract class Employee {
+    //...
+}
+```
+
+<br/>
+Typically, an abstract class contains one or more abstract methods.
+
+An abstract method does not contain implementation. It only defines the signature of the method without including the method body. An abstract method must be implemented in the derived class.  
+
+The following shows the Employee abstract class that has the getSalary() abstract method: <br />
+
+
+```
+abstract class Employee {
+  constructor(private firstName: string, private lastName: string) {}
+  abstract getSalary(): number;
+  get fullName(): string {
+    return `${this.firstName} ${this.lastName}`;
+  }
+  compensationStatement(): string {
+    return `${this.fullName} makes ${this.getSalary()} a month.`;
+  }
+}
+```
+
+
+<br/>
+
+In the Employee class:
+
+1. The constructor declares the firstName and lastName properties.
+2. The getSalary() method is an abstract method. The derived class will implement the logic based on the type of employee.
+3. The getFullName() and compensationStatement() methods contain detailed implementation. Note that the compensationStatement() method calls the getSalary() method.
+
+Because the Employee class is abstract, you cannot create a new object from it. The following statement causes an error: <br/>
+
+```
+let employee = new Employee('John','Doe');
+```
+
+ <br/>
+Error: <br/>
+
+`error TS2511: Cannot create an instance of an abstract class.`
+
+ <br/>
+
+ 
+
+The following FullTimeEmployee class inherits from the Employee class: <br/>
+
+
+
+```
+class FullTimeEmployee extends Employee {
+    constructor(firstName: string, lastName: string, private salary: number) {
+        super(firstName, lastName);
+    }
+    getSalary(): number {
+        return this.salary;
+    }
+}
+```
+
+
+<br/>
+In this FullTimeEmployee class, the salary is set in the constructor. Because the getSalary() is an abstract method of the Employee class, the FullTimeEmployee class needs to implement this method. In this example, it just returns the salary without any calculation.
+
+<br/>
+
+The following shows the Contractor class that also inherits from the Employee class: <br/>
+
+
+```
+class Contractor extends Employee {
+  constructor(
+    firstName: string,
+    lastName: string,
+    private rate: number,
+    private hours: number
+  ) {
+    super(firstName, lastName);
+  }
+  getSalary(): number {
+    return this.rate * this.hours;
+  }
+}
+```
+
+
+<br/>
+In the Contractor class, the constructor initializes the rate and hours. The getSalary() method calculates the salary by multiplying the rate by the hours.
+
+<br/>
+The following first creates a FullTimeEmployee object and a Contractor object and then shows the compensation statements to the console: <br/>
+
+
+```
+let john = new FullTimeEmployee('John', 'Doe', 12000);
+let jane = new Contractor('Jane', 'Doe', 100, 160);
+
+console.log(john.compensationStatement());
+console.log(jane.compensationStatement());
+```
+
+
+<br/>
+Output:
+<br/>
+
+```
+John Doe makes 12000 a month.
+Jane Doe makes 16000 a month.
+```
+
+<br/>
+
+It’s a good practice to use abstract classes when you want to share code among some related classes.
+
+### Summary
+1. Abstract classes cannot be instantiated.
+2. An Abstract class has at least one abstract method.
+3. To use an abstract class, you need to inherit it and provide the implementation for the abstract methods.
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+ 
 
 
 
