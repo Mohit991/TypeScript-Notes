@@ -2477,10 +2477,414 @@ It’s a good practice to use abstract classes when you want to share code among
 3. To use an abstract class, you need to inherit it and provide the implementation for the abstract methods.
 
 
+## TypeScript Interface
+TypeScript interfaces define the contracts within your code. They also provide explicit names for type checking. <br/>
+Let’s start with a simple example: <br/>
+
+
+```
+function getFullName(person: {
+    firstName: string;
+    lastName: string
+}) {
+    return `${person.firstName} ${person.lastName}`;
+}
+
+let person = {
+    firstName: 'John',
+    lastName: 'Doe'
+};
+
+console.log(getFullName(person));
+```
+
+
+<br/>
+In this example, the TypeScript compiler checks the argument you pass into the getFullName() function. <br/>
+If the argument has two properties firstName and lastName and their types are strings, then the TypeScript compiler passes the check. Otherwise, it’ll issue an error. <br/>
+The type annotation of the function argument makes the code difficult to read. To address this issue, TypeScript introduces the concept of interfaces. <br/>
+
+The following uses an interface Person that has two string properties:
+
+<br/>
+
+
+```
+interface Person {
+    firstName: string;
+    lastName: string;
+}
+```
+
+
+<br/>
+
+By convention, the interface names are in the PascalCase. They use a single capitalized letter to separate words in their names. For example, Person, UserProfile, and FullName. <br/>
+
+After defining the Person interface, you can use it as a type. For example, you can annotate the function parameter with the interface name: <br />
+
+
+```
+function getFullName(person: Person) {
+    return `${person.firstName} ${person.lastName}`;
+}
+
+let john = {
+    firstName: 'John',
+    lastName: 'Doe'
+};
+
+console.log(getFullName(john));
+```
 
 
 
- 
+<br/>
+The code now is easier to read than before.
+<br />
+The getFullName() function will accept any object that has at least two string properties with the name firstName and lastName. <br/>
+
+For example, the following code declares an object that has four properties:
+
+<br/>
+
+
+```
+let jane = {
+  firstName: 'Jane',
+  middleName: 'K.',
+  lastName: 'Doe',
+  age: 22,
+};
+```
+
+
+<br/>
+Since the jane object has two string properties firstName and lastName, you can pass it on to the getFullName() function as follows: <br/>
+
+
+```
+let fullName = getFullName(jane);
+console.log(fullName); // Jane Doe
+```
+
+
+<br/>
+
+### Optional properties
+An interface may have optional properties. To declare an optional property, you use the question mark (?) at the end of the property name in the declaration, like this: <br/>
+
+
+```
+interface Person {
+    firstName: string;
+    middleName?: string;
+    lastName: string;
+}
+```
+
+
+<br/>
+
+In this example, the Person interface has two required properties and one optional property. <br />
+
+And the following shows how to use the Person interface in the getFullName() function: <br/>
+
+
+```
+function getFullName(person: Person) {
+    if (person.middleName) {
+        return `${person.firstName} ${person.middleName} ${person.lastName}`;
+    }
+    return `${person.firstName} ${person.lastName}`;
+}
+```
+
+
+<br/>
+
+### Readonly properties
+If properties should be modifiable only when the object is first created, you can use the readonly keyword before the name of the property: <br/>
+
+
+```
+interface Person {
+  readonly ssn: string;
+  firstName: string;
+  lastName: string;
+}
+
+let person: Person;
+person = {
+  ssn: '171-28-0926',
+  firstName: 'John',
+  lastName: 'Doe',
+};
+```
+
+
+<br/>
+In this example, the ssn property cannot be changed:
+<br/>
+
+
+```
+person.ssn = '171-28-0000';
+```
+
+
+<br/>
+Error:
+<br/>
+
+```
+error TS2540: Cannot assign to 'ssn' because it is a read-only property.
+```
+
+
+<br />
+
+### Function types
+In addition to describing an object with properties, interfaces allow you to represent function types. <br />
+To describe a function type, you assign the interface to the function signature that contains the parameter list with types and returned types. For example: <br/>
+
+
+```
+interface StringFormat {
+    (str: string, isUpper: boolean): string
+}
+
+let format: StringFormat;
+
+format = function (str: string, isUpper: boolean) {
+    return isUpper ? str.toLocaleUpperCase() : str.toLocaleLowerCase();
+};
+
+console.log(format('hi', true)); // HI
+```
+
+
+<br/>
+Note that the parameter names don’t need to match the function signature. The following example is equivalent to the above example: <br />
+
+
+
+```
+let format: StringFormat;
+
+format = function (src: string, upper: boolean) {
+    return upper ? src.toLocaleUpperCase() : src.toLocaleLowerCase();
+};
+
+console.log(format('hi', true));
+```
+
+
+
+<br/>
+The StringFormat interface ensures that all the callers of the function that implements it pass in the required arguments: a string and a boolean. <br/>
+
+
+### Class Types
+If you have worked with Java or C#, you can find that the main use of the interface is to define a contract between classes.
+
+For example, the following Json interface can be implemented by any class: <br/>
+
+
+```
+interface Json {
+  toJson(): string;
+}
+
+class Person implements Json {
+  constructor(private firstName: string, private lastName: string) {}
+  toJson(): string {
+    return JSON.stringify(this);
+  }
+}
+
+let person = new Person('John', 'Doe');
+console.log(person.toJson()); // {"firstName":"John","lastName":"Doe"}
+
+```
+
+
+<br/>
+In the Person class, we implemented the toJson() method of the Json interface.
+
+
+### Summary
+1. TypeScript interfaces define contracts in your code and provide explicit names for type-checking.
+2. Interfaces may have optional properties or read-only properties.
+3. Interfaces can be used as function types.
+4. Interfaces are typically used as class types that make a contract between unrelated classes.
+
+
+### Interfaces extending one interface
+Suppose that you have an interface called Mailable that contains two methods called send() and queue() as follows: <br/>
+
+
+```
+interface Mailable {
+    send(email: string): boolean
+    queue(email: string): boolean
+}
+```
+
+
+<br/>
+And you have many classes that already implemented the Mailable interface.
+Now, you want to add a new method to the Mailable interface that sends an email later like this: <br/>
+
+
+```
+later(email: string, after: number): boolean
+```
+
+
+<br/>
+
+
+However, adding the later() method to the Mailable interface would break the current code. <br/>
+
+To avoid this, you can create a new interface that extends the Mailable interface: <br/>
+
+
+```
+interface FutureMailable extends Mailable {
+    later(email: string, after: number): boolean
+}
+```
+
+
+
+<br/>
+
+
+To extend an interface, you use the extends keyword with the following syntax: <br />
+
+
+```
+interface A {
+    a(): void
+}
+
+interface B extends A {
+    b(): void
+}
+```
+
+
+<br/>
+The interface B extends the interface A, which then has both methods a() and b().
+
+Like classes, the FutureMailable interface inherits the send() and queue() methods from the Mailable interface. <br/>
+
+
+```
+class Mail implements FutureMailable {
+    later(email: string, after: number): boolean {
+        console.log(`Send email to ${email} in ${after} ms.`);
+        return true;
+    }
+    send(email: string): boolean {
+        console.log(`Sent email to ${email} after ${after} ms. `);
+        return true;
+    }
+    queue(email: string): boolean {
+        console.log(`Queue an email to ${email}.`);
+        return true;
+    }
+}
+```
+
+
+<br/>
+
+### Interfaces extending multiple interfaces
+
+
+```
+interface C {
+    c(): void
+}
+
+interface D extends B, C {
+    d(): void
+}
+```
+
+
+<br/>
+In this example, the interface D extends the interfaces B and C. So D has all the methods of B and C interfaces, which are a(), b(), and c() methods.
+
+
+
+### Interfaces extending classes
+
+
+TypeScript allows an interface to extend a class. In this case, the interface inherits the properties and methods of the class. Also, the interface can inherit the private and protected members of the class, not just the public members.
+
+It means that when an interface extends a class with private or protected members, the interface can only be implemented by that class or subclasses of that class from which the interface extends.
+
+By doing this, you restrict the usage of the interface to only classes or subclasses of the class from which the interface extends. If you attempt to implement the interface from a class that is not a subclass of the class that the interface inherited, you’ll get an error. For example:
+<br/>
+
+
+```
+class Control {
+    private state: boolean;
+}
+
+interface StatefulControl extends Control {
+    enable(): void
+}
+
+class Button extends Control implements StatefulControl {
+    enable() { }
+}
+class TextBox extends Control implements StatefulControl {
+    enable() { }
+}
+class Label extends Control { }
+
+
+// Error: cannot implement
+class Chart implements StatefulControl {
+    enable() { }
+
+}
+```
+
+
+<br/>
+
+
+### Summary
+1. An interface can extend one or multiple existing interfaces.
+2. An interface also can extend a class. If the class contains private or protected members, the interface can only be implemented by the class or subclasses of that class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
