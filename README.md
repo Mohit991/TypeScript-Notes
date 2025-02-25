@@ -3192,13 +3192,143 @@ If a type assertion fails, different kinds of errors will occur depending on how
 1. Type assertion allows you to assign a new type to a value.
 2. Use the as keyword or <> operator to perform a type assertion.
    
-   
-   
-   
+## Introduction to TypeScript Generics
+TypeScript generics allow you to write reusable and generalized forms of functions, classes, and interfaces. In this tutorial, you’re focusing on developing generic functions. <br/>
 
 
+Suppose you need to develop a function that returns a random number in an array of numbers. <br/>
 
 
+```
+function getRandomNumberElement(items: number[]): number {
+    let randomIndex = Math.floor(Math.random() * items.length);
+    return items[randomIndex];
+}
+```
+
+<br/>
+
+We have to write a separate function for an array of strings and array of objects. This will lead to a lot of duplication. 
+We can solve this using generic types. 
+
+
+The following shows a generic function that returns the random element from an array of type T: <br/>
+
+
+```
+function getRandomElement<T>(items: T[]): T {
+    let randomIndex = Math.floor(Math.random() * items.length);
+    return items[randomIndex];
+}
+```
+
+
+<br/>
+
+This function uses type variable T. The T allows you to capture the type provided when calling the function. Additionally, the function uses the T type variable as its return type.
+
+This getRandomElement() function is generic because it can work with any data type including string, number, object,…
+
+By convention, we use the letter T as the type variable. However, you can freely use other letters such as A, B C, …
+
+
+### Calling a generic function
+
+The following shows how to use the getRandomElement() with an array of numbers:
+
+<br/>
+
+
+```
+let numbers = [1, 5, 7, 4, 2, 9];
+let randomEle = getRandomElement<number>(numbers); 
+console.log(randomEle);
+```
+
+
+<br/>
+
+
+This example explicitly passes number as the T type into the getRandomElement() function.
+
+In practice, you’ll use type inference for the argument. It means that you let the TypeScript compiler set the value of T automatically based on the type of argument that you pass into, like this:
+
+<br/>
+
+
+```
+let numbers = [1, 5, 7, 4, 2, 9];
+let randomEle = getRandomElement(numbers); 
+console.log(randomEle);
+```
+
+
+<br/>
+
+
+In this example, we didn’t pass the number type to the getRandomElement() explicitly. The compiler looks at the argument and sets T to its type. 
+<br/>
+
+
+Now, the getRandomElement() function is also type-safe. For example, if you assign the returned value to a string variable, you’ll get an error:
+
+<br/>
+
+
+```
+let numbers = [1, 5, 7, 4, 2, 9];
+let returnElem: string;
+returnElem = getRandomElement(numbers);  // compiler error
+```
+
+
+<br/>
+
+
+### Generic functions with multiple types
+
+The following illustrates how to develop a generic function with two type variables U and V: <br/>
+
+
+```
+function merge<U, V>(obj1: U, obj2: V) {
+    return {
+        ...obj1,
+        ...obj2
+    };
+}
+```
+
+
+<br/>
+
+The merge() function merges two objects with the type U and V. It combines the properties of the two objects into a single object.
+
+Type inference infers the returned value of the merge() function as an intersection type of U and V, which is U & V
+
+The following illustrates how to use the merge() function that merges two objects:
+
+<br/>
+
+
+```
+let result = merge(
+    { name: 'John' },
+    { jobTitle: 'Frontend Developer' }
+);
+
+console.log(result);
+
+// { name: 'John', jobTitle: 'Frontend Developer' }
+```
+
+
+<br/>
+
+### Benefits
+1. Leverage type checks at the compile time.
+2. Eliminate type castings.
+3. Allow you to implement generic algorithms.
 
 
 
