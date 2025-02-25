@@ -2864,19 +2864,337 @@ class Chart implements StatefulControl {
 1. An interface can extend one or multiple existing interfaces.
 2. An interface also can extend a class. If the class contains private or protected members, the interface can only be implemented by the class or subclasses of that class.
 
+## TypeScript Intersection types
+An intersection type creates a new type by combining multiple existing types. The new type has all features of the existing types. 
+
+To combine types, you use the & operator as follows: <br/>
+
+
+```
+type typeAB = typeA & typeB;
+```
+
+
+<br/>
+The typeAB will have all properties from both typeA and typeB. <br/>
+
+Note that the union type uses the | operator that defines a variable that can hold a value of either typeA or typeB <br/>
+
+```
+let varName = typeA | typeB; // union type
+```
+
+
+<br/>
+
+Suppose that you have three interfaces: BusinessPartner, Identity, and Contact.
+
+<br/>
+
+```
+interface BusinessPartner {
+    name: string;
+    credit: number;
+}
+
+interface Identity {
+    id: number;
+    name: string;
+}
+
+interface Contact {
+    email: string;
+    phone: string;
+}
+```
+
+
+<br/>
+
+```
+type Employee = Identity & Contact;
+type Customer = BusinessPartner & Contact;
+```
+
+
+<br/>
+
+```
+type Employee = Identity & Contact;
+
+let e: Employee = {
+    id: 100,
+    name: 'John Doe',
+    email: 'john.doe@example.com',
+    phone: '(408)-897-5684'
+};
+```
+
+
+<br/>
+
+```
+type Customer = BusinessPartner & Contact;
+
+let c: Customer = {
+    name: 'ABC Inc.',
+    credit: 1000000,
+    email: 'sales@abcinc.com',
+    phone: '(408)-897-5735'
+};
+```
+
+
+<br/>
+
+
+### Summary
+1. An intersection type combines two or more types to create a new type that has all properties of the existing types.
+2. The type order is not important when you combine types.
+
+## TypeScript Type Guards
+### typeof
+
+```
+type alphanumeric = string | number;
+
+function add(a: alphanumeric, b: alphanumeric) {
+    if (typeof a === 'number' && typeof b === 'number') {
+        return a + b;
+    }
+
+    if (typeof a === 'string' && typeof b === 'string') {
+        return a.concat(b);
+    }
+
+    throw new Error('Invalid arguments. Both arguments must be either numbers or strings.');
+}
+```
+
+
+<br/>
+
+### instanceof
+
+
+```
+class Customer {
+    isCreditAllowed(): boolean {
+        // ...
+        return true;
+    }
+}
+
+class Supplier {
+    isInShortList(): boolean {
+        // ...
+        return true;
+    }
+}
+
+type BusinessPartner = Customer | Supplier;
+
+function signContract(partner: BusinessPartner) : string {
+    let message: string;
+    if (partner instanceof Customer) {
+        message = partner.isCreditAllowed() ? 'Sign a new contract with the customer' : 'Credit issue';
+    }
+
+    if (partner instanceof Supplier) {
+        message = partner.isInShortList() ? 'Sign a new contract the supplier' : 'Need to evaluate further';
+    }
+
+    return message;
+}
+```
+
+
+<br/>
+
+### in 
+The in operator carries a safe check for the existence of a property on an object. You can also use it as a type guard. For example: <br/>
+
+
+```
+function signContract(partner: BusinessPartner) : string {
+    let message: string;
+    if ('isCreditAllowed' in partner) {
+        message = partner.isCreditAllowed() ? 'Sign a new contract with the customer' : 'Credit issue';
+    } else {
+        // must be Supplier
+        message = partner.isInShortList() ? 'Sign a new contract the supplier ' : 'Need to evaluate further';
+    }
+    return message;
+}
+```
+
+
+<br/>
+
+
+### Summary
+1. Type guards narrow down the type of a variable within a conditional block.
+2. Use the typeof and instanceof operators to implement type guards in the conditional blocks
+
+
+## Type Assertions
+Type assertions instruct the TypeScript compiler to treat a value as a specified type. In TypeScript, you can use the as keyword or <> operator for type assertions.
+
+### Type assertions using the as keyword
+The following selects the first input element on an HTML document using the querySelector() method: <br/>
+
+
+```
+let el = document.querySelector('input["type="text"]');
+```
+
+
+<br/>
+
+Since the returned type of the document.querySelector() method is the Element type, the following code causes a compile-time error: <br/>
+
+
+```
+console.log(el.value);
+```
+
+
+<br/>
+
+Error: <br/>
+
+
+```
+Property 'value' does not exist on type 'Element'.
+```
+
+
+<br/>
+
+The reason is that the value property doesn’t exist in the Element type. It only exists on the HTMLInputElement type.
+
+To resolve this, you can instruct the TypeScript compiler to treat the type of the el element as HTMLInputElement by using the as keyword like this: <br/>
+
+
+```
+const el = document.querySelector('input[type="text"]');
+const input = el as HTMLInputElement;
+```
+
+
+<br/>
+
+
+Now, the input variable has the type HTMLInputElement. So accessing its value property won’t cause any error. The following code works: 
+<br/>
+
+
+```
+console.log(input.value);
+```
+
+<br/>
+Note that the HTMLInputElement type extends the HTMLElement type that extends to the Element type. <br/>
+The syntax for type assertion of a variable from typeA to typeB is as follows:
+
+<br/>
 
 
 
+```
+let a: typeA;
+let b = a as typeB;
+```
 
 
+<br/>
 
 
+### Type assertion using the <> operator
+Besides the as keyword, you can use the <> operator to perform a type assertion. For example: <br/>
 
 
+```
+let input = <HTMLInputElement>document.querySelector('input[type="text"]');
+
+console.log(input.value);
+```
 
 
+<br/>
+
+The syntax for type assertion using the <> operator is as follows: <br/>
 
 
+```
+let a: typeA;
+let b = <typeB>a
+```
+
+
+<br/>
+
+
+### Type assertion result
+If a type assertion fails, different kinds of errors will occur depending on how you use type assertion and actual runtime types.
+
+
+1. Compile-time errors
+   When you try to perform a type assertion between incompatible types,       the TypeScript compiler may give you an error or warning. For example: <br/>
+
+
+   ```
+   let price = '9.99';
+   let netPrice = price as number; // error
+   ```
+
+
+   <br/>
+
+   In this example, we attempt to assign the number type to a string, the     TypeScript compiler issues the following compile-time error: <br/>
+
+
+   ```
+    Conversion of type 'string' to type 'number' may be a mistake because       neither type sufficiently overlaps with the other. If this was             intentional, convert the expression to 'unknown' first.
+      ```
+
+   <br/>
+
+2. Runtime errors
+   When you perform a type assertion of an object to a type that doesn’t       match its structure and attempt to access a property that doesn’t          exist, you’ll get a runtime error. For example: <br/>
+
+   ```
+   let el = document.querySelector('#name');
+   let input = el as HTMLInputElement;
+   console.log(input.value.length);
+   ```
+
+   <br/>
+
+   In this example, if the element with id #name is not an input element,       the input.value will be undefined at runtime. Hence, accessing the       length property of the value will cause a runtime error:
+
+   <br/>
+
+
+   ```
+   TypeError: Cannot read properties of undefined (reading 'length')
+   ```
+
+
+   <br/>
+
+3. Unexpected behaviors
+   If a type assertion is incorrect, you may not get a compile-time or          runtime error but might experience unexpected behaviors later in your       code. This can make debugging challenging because the error might not
+      occur at the point of the type assertion.
+
+
+### Summary
+1. Type assertion allows you to assign a new type to a value.
+2. Use the as keyword or <> operator to perform a type assertion.
+   
+   
+   
+   
 
 
 
